@@ -275,4 +275,5 @@ int main() {
     std::cin >> capacity;
 
     std::cout << eating(basket, capacity) << std::endl;
+    return 0;
 }
