@@ -33,6 +33,8 @@ namespace VectorNS {
 
         T &operator[](int index);
 
+        const T &operator[](int index) const;
+
         T &PopBack();
 
         bool IsEmpty() { return size == 0; }
@@ -111,11 +113,18 @@ namespace VectorNS {
     }
 
     template<class T>
+    const T &Vector<T>::operator[](int index) const {
+        assert(index < size);
+        return arr[index];
+    }
+
+    template<class T>
     T &Vector<T>::PopBack() {
         --size;
         return arr[size];
     }
 }
+
 
 namespace HeapNS {
     template<class T>
@@ -129,11 +138,11 @@ namespace HeapNS {
         explicit Heap(bool (*_isLess)(const T &l, const T &r) = isLessDefault) : arr(VectorNS::Vector<T>()),
                                                                                  isLess(_isLess) {}
 
-        Heap(const VectorNS::Vector<T> &_arr, bool (*_isLess)(const T &l, const T &r));
+        explicit Heap(const VectorNS::Vector<T> &_arr, bool (*_isLess)(const T &l, const T &r) = isLessDefault);
 
         void Insert(const T &elem);
 
-        T &ShowTop();
+        const T &ShowTop() const;
 
         T ExtractMax();
 
@@ -209,7 +218,7 @@ namespace HeapNS {
     }
 
     template<class T>
-    T &Heap<T>::ShowTop() {
+    const T &Heap<T>::ShowTop() const {
         return arr[0];
     }
 
@@ -228,9 +237,14 @@ namespace HeapNS {
 
 }
 
-int eating(HeapNS::Heap<int> &basket, int lifting_capacity) {
+int eating(const int *basket_arr, const int amount, int lifting_capacity) {
     if (lifting_capacity <= 0) {
         return 0;
+    }
+
+    HeapNS::Heap<int> basket;
+    for (int i = 0; i < amount; ++i) {
+        basket.Insert(basket_arr[i]);
     }
 
     int count = 0;
@@ -263,17 +277,15 @@ bool isLessExample(const int &l, const int &r) {
 int main() {
     int amount;
     std::cin >> amount;
+    int *basket_arr = new int[amount];
 
-    HeapNS::Heap<int> basket(isLessExample);
     for (int i = 0; i < amount; ++i) {
-        int tmp;
-        std::cin >> tmp;
-        basket.Insert(tmp);
+        std::cin >> basket_arr[i];
     }
 
     int capacity;
     std::cin >> capacity;
 
-    std::cout << eating(basket, capacity) << std::endl;
-    return 0;
+    std::cout << eating(basket_arr, amount, capacity) << std::endl;
+    delete[] basket_arr;
 }
